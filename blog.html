@@ -17,36 +17,38 @@
   <!-- Include Marked for Markdown parsing -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    // Function to fetch and display blog posts
     async function loadPosts() {
-      // List of posts (in a real scenario, you might have an index file or API that lists all posts)
-      // For example purposes, we are hardcoding an array of markdown file paths.
-      // In practice, you may need to generate this list during your build process.
-      const postFiles = [
-        'posts/post1.md',
-        'posts/post2.md'
-        // You can generate this list automatically, for example using a JSON file
-      ];
-      
-      const container = document.getElementById('blog-container');
-      
-      for (const file of postFiles) {
-        try {
-          const response = await fetch(file);
-          if (!response.ok) {
-            console.error(`Failed to fetch ${file}`);
-            continue;
-          }
-          const markdown = await response.text();
-          // Optionally, extract front matter for the title and featured image if needed.
-          // Here we assume the markdown content is already formatted.
-          const htmlContent = marked.parse(markdown);
-          const postElement = document.createElement('article');
-          postElement.innerHTML = htmlContent;
-          container.appendChild(postElement);
-        } catch (error) {
-          console.error(`Error fetching ${file}:`, error);
+      try {
+        // Fetch the generated posts index
+        const indexResponse = await fetch('/posts.json');
+        if (!indexResponse.ok) {
+          throw new Error('Failed to load posts index');
         }
+        const postFiles = await indexResponse.json(); // Expecting an array of file paths
+        
+        const container = document.getElementById('blog-container');
+        
+        for (const file of postFiles) {
+          try {
+            const response = await fetch('/' + file);
+            if (!response.ok) {
+              console.error(`Failed to fetch ${file}`);
+              continue;
+            }
+            const markdown = await response.text();
+            // Convert markdown to HTML using marked
+            const htmlContent = marked.parse(markdown);
+            
+            // Create a container for the post
+            const postElement = document.createElement('article');
+            postElement.innerHTML = htmlContent;
+            container.appendChild(postElement);
+          } catch (error) {
+            console.error(`Error fetching ${file}:`, error);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading posts:', err);
       }
     }
     
