@@ -1,18 +1,26 @@
 backend:
   name: git-gateway
-  branch: main  # or whatever your main branch is
+  branch: main  # or your default branch name
 
-media_folder: "static/images"  # This is where images will be stored
-public_folder: "/images"  # Public URL for images
+media_folder: "assets/img/uploads"  # folder for uploaded images
+public_folder: "/assets/img/uploads"
 
 collections:
-  - name: "blogs"
-    label: "Blogs"
-    folder: "content/blogs"  # This is where your blog posts will be stored
-    create: true  # Allows you to create new posts
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"  # Creates a clean URL based on the date
+  - name: "posts"
+    label: "Blog Posts"
+    folder: "posts"      # The folder where blog posts are stored.
+    create: true         # Allow users to create new documents in this collection.
+    slug: "{{slug}}"     # How the filename is generated from the title.
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Content", name: "content", widget: "markdown" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Featured Image", name: "featured_image", widget: "image", required: false }
+      - { label: "Content", name: "body", widget: "markdown" }
+
+# Optional: Preview template configuration (requires a separate preview JS file)
+# This tells the CMS how to render a preview of a blog post.
+publish_mode: editorial_workflow
+
+# Optional: Configure a preview URL if you want an iframe-based preview:
+# Note: This requires additional setup on your site to support query parameters.
+# For example, if you have a preview page at /preview.html, you can configure:
+#   preview_url: "http://localhost:8080/preview.html"
