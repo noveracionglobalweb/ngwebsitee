@@ -18,7 +18,7 @@ collections:
 
 # Optional: Preview template configuration (requires a separate preview JS file)
 # This tells the CMS how to render a preview of a blog post.
-publish_mode: editorial_workflow
+# publish_mode: editorial_workflow
 
 # Optional: Configure a preview URL if you want an iframe-based preview:
 # Note: This requires additional setup on your site to support query parameters.
