@@ -1,31 +1,56 @@
-<!-- blog.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-  <h1>Blog</h1>
-  <div id="blog-posts"></div>
-
+  <header>
+    <h1>My Blog</h1>
+  </header>
+  <main id="blog-container">
+    <!-- Blog posts will be injected here -->
+  </main>
+  
+  <!-- Include Marked for Markdown parsing -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    fetch('/content/blogs')
-      .then(response => response.json())
-      .then(posts => {
-        const blogContainer = document.getElementById('blog-posts');
-        posts.forEach(post => {
-          const postElement = document.createElement('div');
-          postElement.innerHTML = `
-            <h2>${post.title}</h2>
-            <img src="${post.image}" alt="${post.title}" />
-            <div>${marked(post.content)}</div>
-          `;
-          blogContainer.appendChild(postElement);
-        });
-      });
+    // Function to fetch and display blog posts
+    async function loadPosts() {
+      // List of posts (in a real scenario, you might have an index file or API that lists all posts)
+      // For example purposes, we are hardcoding an array of markdown file paths.
+      // In practice, you may need to generate this list during your build process.
+      const postFiles = [
+        'posts/post1.md',
+        'posts/post2.md'
+        // You can generate this list automatically, for example using a JSON file
+      ];
+      
+      const container = document.getElementById('blog-container');
+      
+      for (const file of postFiles) {
+        try {
+          const response = await fetch(file);
+          if (!response.ok) {
+            console.error(`Failed to fetch ${file}`);
+            continue;
+          }
+          const markdown = await response.text();
+          // Optionally, extract front matter for the title and featured image if needed.
+          // Here we assume the markdown content is already formatted.
+          const htmlContent = marked.parse(markdown);
+          const postElement = document.createElement('article');
+          postElement.innerHTML = htmlContent;
+          container.appendChild(postElement);
+        } catch (error) {
+          console.error(`Error fetching ${file}:`, error);
+        }
+      }
+    }
+    
+    document.addEventListener("DOMContentLoaded", loadPosts);
   </script>
 </body>
 </html>
